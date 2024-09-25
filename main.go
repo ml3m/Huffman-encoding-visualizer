@@ -1,3 +1,25 @@
+/*
+    Huffman Encoding Visualizer,
+        Step-by-step functionality still in development.
+
+    File includes:
+        - Simple Huffman Implementation
+        - Priority Queue using gostd library
+        - Tree building with m1gwings/treedrawer
+        
+    Functionality:
+        - Printing/Formatting of:
+            - Occurrences of symbols
+            - Huffman binary codes
+
+        Argument handling:
+            - Handling of flags:
+                --count: Display character occurrence count
+                --codes: Display the Huffman codes table
+                --tree: Visualize the Huffman tree
+
+    Repository: ~ github.com/ml3m 
+*/
 package main
 
 import (
@@ -39,6 +61,7 @@ func (pq PriorityQueue) Swap(i, j int) { pq[i], pq[j] = pq[j], pq[i] }
 
 func (pq *PriorityQueue) Push(x interface{}) { *pq = append(*pq, x.(*HuffmanNode)) }
 
+// poping what needed.
 func (pq *PriorityQueue) Pop() interface{} {
     old := *pq
     n := len(old)
@@ -68,6 +91,7 @@ func BuildHuffmanTree(input string) *HuffmanNode {
 
     // Sort the frequency entries first by frequency (descending), then by character (ascending)
     // Sort by ASCII value -> provides a better visual experience
+    // these processings helps also for formating. 
     sort.Slice(frequencyEntries, func(i, j int) bool {
         if frequencyEntries[i].freq == frequencyEntries[j].freq {
             return frequencyEntries[i].char < frequencyEntries[j].char 
@@ -149,37 +173,75 @@ func PrintFrequencyArray(freqMap map[rune]int) {
     }
 }
 
-func main() {
+// Function to parse command-line arguments and flags
+func parseArgs() (inputFile string, showCodes, showCount, showTree bool) {
     // Define flags
-    showCodes := flag.Bool("codes", false, "Display the Huffman codes table")
-    showCount := flag.Bool("count", false, "Display the character occurrence count")
-    showTree := flag.Bool("tree", false, "Display the Huffman tree visualization")
+    codesFlag := flag.Bool("codes", false, "Display the Huffman codes table")
+    countFlag := flag.Bool("count", false, "Display the character occurrence count")
+    treeFlag := flag.Bool("tree", false, "Display the Huffman tree visualization")
 
     // Parse flags
     flag.Parse()
 
-    if len(flag.Args()) < 1 {
-        fmt.Println("Usage: go run main.go <input_file> [--codes | --count | --tree]")
-        return
+    // Get all command-line arguments
+    args := os.Args[1:] // Skip the program name
+
+    // Process arguments
+    for _, arg := range args {
+        switch arg {
+        case "--codes":
+            *codesFlag = true
+        case "--count":
+            *countFlag = true
+        case "--tree":
+            *treeFlag = true
+        default:
+            // Assume the first non-flag argument is the input file
+            if inputFile == "" {
+                inputFile = arg
+            } else {
+                fmt.Println("Warning: More than one input file specified. Using only the first one.")
+            }
+        }
     }
 
-    // Open the input file
-    file, err := os.Open(flag.Arg(0)) // Use flag.Arg to get the file argument
+    if inputFile == "" {
+        fmt.Println("Usage: go run main.go <input_file> [--codes | --count | --tree]")
+        os.Exit(1)
+    }
+
+    return inputFile, *codesFlag, *countFlag, *treeFlag
+}
+
+// Function to read the first line from the input file
+func readInputFile(filePath string) (string, error) {
+    file, err := os.Open(filePath)
     if err != nil {
-        fmt.Println("Error opening file:", err)
-        return
+        return "", fmt.Errorf("error opening file: %w", err)
     }
     defer file.Close()
 
-    // Read the first line from the file
     scanner := bufio.NewScanner(file)
     if !scanner.Scan() {
-        fmt.Println("Error reading file:", scanner.Err())
+        return "", fmt.Errorf("error reading file: %w", scanner.Err())
+    }
+    return scanner.Text(), nil
+}
+
+/******************************************************************************/
+func main() {
+    // Parse command-line arguments and flags
+    inputFile, showCodes, showCount, showTree := parseArgs()
+
+    // Read the input file
+    input, err := readInputFile(inputFile)
+    if err != nil {
+        fmt.Println(err)
         return
     }
-    input := scanner.Text() // Take the input string from the first line
     fmt.Printf("This is the input given by the user:\n%s\n", input)
 
+    // Build the Huffman tree
     root := BuildHuffmanTree(input)
 
     // Frequency map
@@ -189,7 +251,7 @@ func main() {
     }
 
     // Handle flags
-    if *showCount {
+    if showCount {
         PrintFrequencyArray(freqMap) // Call the function to print frequency array
     }
 
@@ -197,7 +259,7 @@ func main() {
     codes := make(map[rune]string)
     GenerateHuffmanCodes(root, "", codes)
 
-    if *showCodes {
+    if showCodes {
         fmt.Println("Huffman Codes:")
         fmt.Println("--------------")
         fmt.Printf("%-5s %s\n", "Char", "Code")
@@ -208,7 +270,7 @@ func main() {
     }
 
     // Handle tree visualization
-    if *showTree {
+    if showTree {
         // Create a tree for drawing
         t := tree.NewTree(tree.NodeString("Huffman Tree"))
         DrawHuffmanTree(root, t, freqMap)
