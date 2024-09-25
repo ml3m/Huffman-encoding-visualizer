@@ -2,6 +2,7 @@ package main
 
 import (
     "bufio"
+    "flag"
     "fmt"
     "os"
     "sort"
@@ -149,13 +150,21 @@ func PrintFrequencyArray(freqMap map[rune]int) {
 }
 
 func main() {
-    if len(os.Args) < 2 {
-        fmt.Println("Usage: go run main.go <input_file>")
+    // Define flags
+    showCodes := flag.Bool("codes", false, "Display the Huffman codes table")
+    showCount := flag.Bool("count", false, "Display the character occurrence count")
+    showTree := flag.Bool("tree", false, "Display the Huffman tree visualization")
+
+    // Parse flags
+    flag.Parse()
+
+    if len(flag.Args()) < 1 {
+        fmt.Println("Usage: go run main.go <input_file> [--codes | --count | --tree]")
         return
     }
 
     // Open the input file
-    file, err := os.Open(os.Args[1])
+    file, err := os.Open(flag.Arg(0)) // Use flag.Arg to get the file argument
     if err != nil {
         fmt.Println("Error opening file:", err)
         return
@@ -169,7 +178,7 @@ func main() {
         return
     }
     input := scanner.Text() // Take the input string from the first line
-    fmt.Printf("this is the input given by the user:\n%s\n", input)
+    fmt.Printf("This is the input given by the user:\n%s\n", input)
 
     root := BuildHuffmanTree(input)
 
@@ -179,26 +188,32 @@ func main() {
         freqMap[char]++
     }
 
-    // Print frequency array
-    //PrintFrequencyArray(freqMap)
+    // Handle flags
+    if *showCount {
+        PrintFrequencyArray(freqMap) // Call the function to print frequency array
+    }
 
     // Generate Huffman codes
     codes := make(map[rune]string)
     GenerateHuffmanCodes(root, "", codes)
 
-    //// Print Huffman codes
-    //fmt.Println("Huffman Codes:")
-    //fmt.Println("--------------")
-    //fmt.Printf("%-5s %s\n", "Char", "Code")
-    //for char, code := range codes {
-    //    fmt.Printf("%-5s %s\n", string(char), code)
-    //}
-    //fmt.Println()
+    if *showCodes {
+        fmt.Println("Huffman Codes:")
+        fmt.Println("--------------")
+        fmt.Printf("%-5s %s\n", "Char", "Code")
+        for char, code := range codes {
+            fmt.Printf("%-5s %s\n", string(char), code)
+        }
+        fmt.Println()
+    }
 
-    // Create a tree for drawing
-    t := tree.NewTree(tree.NodeString("Huffman Tree"))
-    DrawHuffmanTree(root, t, freqMap)
+    // Handle tree visualization
+    if *showTree {
+        // Create a tree for drawing
+        t := tree.NewTree(tree.NodeString("Huffman Tree"))
+        DrawHuffmanTree(root, t, freqMap)
 
-    // Draw the tree
-    fmt.Println(t)
+        // Draw the tree
+        fmt.Println(t)
+    }
 }
