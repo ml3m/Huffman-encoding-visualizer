@@ -37,20 +37,20 @@ go get github.com/m1gwings/treedrawer/tree
 Display Huffman Codes:
 
 ```bash
-go run main.go input.txt --codes
+go run main.go input.in --codes
 ```
 This command will output the Huffman codes generated for each character based on the input text in input.txt.
 
 ### Display Character Occurrences:
 
 ```bash
-go run main.go input.txt --count
+go run main.go input.in --count
 ```
 This command will print the frequency of each character present in the input text.
 
 ### Visualize the Huffman Tree:
 
 ```bash
-go run main.go input.txt --tree
+go run main.go input.in --tree
 ```
 This command will create a visual representation of the Huffman tree based on the input text.
