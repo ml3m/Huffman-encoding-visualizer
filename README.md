@@ -22,6 +22,17 @@ go run main.go <input_file> [--codes | --count | --tree]
 
 --tree: Visualizes the Huffman tree structure.
 
+## Requirements and Dependencies
+Go 1.16 or later
+The github.com/m1gwings/treedrawer/tree package for visualizing the Huffman tree.
+Example Input File
+Make sure your input file (e.g., input.txt) contains text formatted as follows:
+
+### Make sure you add Dependencies:
+```bash
+go get github.com/m1gwings/treedrawer/tree
+```
+
 ## Example Commands
 Display Huffman Codes:
 
@@ -43,14 +54,3 @@ This command will print the frequency of each character present in the input tex
 go run main.go input.txt --tree
 ```
 This command will create a visual representation of the Huffman tree based on the input text.
-
-## Requirements and Dependencies
-Go 1.16 or later
-The github.com/m1gwings/treedrawer/tree package for visualizing the Huffman tree.
-Example Input File
-Make sure your input file (e.g., input.txt) contains text formatted as follows:
-
-### Make sure you add Dependencies:
-```bash
-go get github.com/m1gwings/treedrawer/tree
-```
