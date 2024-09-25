@@ -27,5 +27,4 @@ Huffman coding is a method used for lossless data compression. This visualizer a
 
 
 ## Example Usage
-<p align="center"><img width="50%" src="./photos-docs/s1.png" /></a></p>
-<p align="center"><img width="50%" src="./photos-docs/s2.png" /></a></p>
+<p align="center"><img src="./photos-docs/s2.png" /></a></p>
