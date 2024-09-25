@@ -5,25 +5,55 @@ The Huffman Encoding Visualizer is a Go-based tool designed to visualize the Huf
 ## Example Usage
 <p align="center"><img src="./photos-docs/s2.png" /></a></p>
 
-## Table of Contents
+## Usage
 
-- [Overview](#overview)
-- [Features](#features)
-- [Getting Started](#getting-started)
-- [Usage](#usage)
-- [Input Format](#input-format)
-- [Visualization](#visualization)
-- [How Huffman Encoding Works](#how-huffman-encoding-works)
-- [Contributing](#contributing)
-- [License](#license)
+To run the Huffman Encoding Visualizer, execute the following command in your terminal:
 
-## Overview
+```bash
+go run main.go <input_file> [--codes | --count | --tree]
+Arguments
+<input_file>: The path to a text file that contains the input data. The first line of the file will be read as the input string for Huffman encoding.
+Flags
+--codes: Displays the Huffman codes for each character in the input text.
 
-Huffman coding is a method used for lossless data compression. This visualizer allows users to input a text string, which is then processed to generate a Huffman tree and corresponding codes. The tree is visualized, providing insights into the encoding mechanism.
+--count: Displays the occurrence count of each character in the input text.
 
-## Features
+--tree: Visualizes the Huffman tree structure.
 
-- **Huffman Tree Visualization**: Displays the Huffman tree structure for the given input.
-- **Huffman Code Generation**: Generates Huffman codes for each character in the input text.
-- **Frequency Analysis**: Prints a frequency array showing the number of occurrences of each character.
-- **User-Friendly Interface**: Simple command-line interface for easy input and output.
+Example Commands
+Display Huffman Codes:
+
+bash
+Copy code
+go run main.go input.txt --codes
+This command will output the Huffman codes generated for each character based on the input text in input.txt.
+
+Display Character Occurrences:
+
+bash
+Copy code
+go run main.go input.txt --count
+This command will print the frequency of each character present in the input text.
+
+Visualize the Huffman Tree:
+
+bash
+Copy code
+go run main.go input.txt --tree
+This command will create a visual representation of the Huffman tree based on the input text.
+
+Combine Flags:
+
+bash
+Copy code
+go run main.go input.txt --codes --tree
+This command will display both the Huffman codes and visualize the Huffman tree.
+
+Requirements
+Go 1.16 or later
+The github.com/m1gwings/treedrawer/tree package for visualizing the Huffman tree.
+Example Input File
+Make sure your input file (e.g., input.txt) contains text formatted as follows:
+
+Copy code
+Hello, Huffman encoding!
