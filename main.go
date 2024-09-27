@@ -70,6 +70,21 @@ func (pq *PriorityQueue) Pop() interface{} {
     return node
 }
 
+// Function to read the first line from the input file
+func readInputFile(filePath string) (string, error) {
+    file, err := os.Open(filePath)
+    if err != nil {
+        return "", fmt.Errorf("error opening file: %w", err)
+    }
+    defer file.Close()
+
+    scanner := bufio.NewScanner(file)
+    if !scanner.Scan() {
+        return "", fmt.Errorf("error reading file: %w", scanner.Err())
+    }
+    return scanner.Text(), nil
+}
+
 // function that builds the Huffman tree for the given argument input
 func BuildHuffmanTree(input string) *HuffmanNode {
     freqMap := make(map[rune]int)
@@ -174,64 +189,54 @@ func PrintFrequencyArray(freqMap map[rune]int) {
 }
 
 // Function to parse command-line arguments and flags
-func parseArgs() (inputFile string, showCodes, showCount, showTree bool) {
+func parseArgs() (inputFile string, showCodes, showCount, showTree, showAll bool) {
     // Define flags
     codesFlag := flag.Bool("codes", false, "Display the Huffman codes table")
     countFlag := flag.Bool("count", false, "Display the character occurrence count")
     treeFlag := flag.Bool("tree", false, "Display the Huffman tree visualization")
+    allFlag := flag.Bool("all", false, "Display all flags") // New flag for all
 
     // Parse flags
     flag.Parse()
 
     // Get all command-line arguments
-    args := os.Args[1:] // Skip the program name
+    args := flag.Args() // Get non-flag arguments
 
     // Process arguments
     for _, arg := range args {
-        switch arg {
-        case "--codes":
-            *codesFlag = true
-        case "--count":
-            *countFlag = true
-        case "--tree":
-            *treeFlag = true
-        default:
-            // Assume the first non-flag argument is the input file
-            if inputFile == "" {
-                inputFile = arg
-            } else {
-                fmt.Println("Warning: More than one input file specified. Using only the first one.")
-            }
+        if arg == "--all" {
+            *allFlag = true
+            showCodes = true
+            showCount = true
+            showTree = true
+            continue // Skip processing other args if --all is found
+        }
+        // Assume the first non-flag argument is the input file
+        if inputFile == "" {
+            inputFile = arg
+        } else {
+            fmt.Println("Warning: More than one input file specified. Using only the first one.")
         }
     }
 
-    if inputFile == "" {
-        fmt.Println("Usage: go run main.go <input_file> [--codes | --count | --tree]")
+    // Check if the input file is empty and not using --all
+    if inputFile == "" && !*allFlag {
+        fmt.Println("Usage: go run main.go <input_file> [--codes | --count | --tree | --all]")
         os.Exit(1)
     }
 
-    return inputFile, *codesFlag, *countFlag, *treeFlag
+    return inputFile, *codesFlag || showCodes, *countFlag || showCount, *treeFlag || showTree, *allFlag
 }
 
-// Function to read the first line from the input file
-func readInputFile(filePath string) (string, error) {
-    file, err := os.Open(filePath)
-    if err != nil {
-        return "", fmt.Errorf("error opening file: %w", err)
-    }
-    defer file.Close()
-
-    scanner := bufio.NewScanner(file)
-    if !scanner.Scan() {
-        return "", fmt.Errorf("error reading file: %w", scanner.Err())
-    }
-    return scanner.Text(), nil
-}
-
-/******************************************************************************/
 func main() {
     // Parse command-line arguments and flags
-    inputFile, showCodes, showCount, showTree := parseArgs()
+    inputFile, showCodes, showCount, showTree, showAll := parseArgs()
+
+    // Ensure inputFile is provided if not using --all
+    if inputFile == "" && !showAll {
+        fmt.Println("Usage: go run main.go <input_file> [--codes | --count | --tree | --all]")
+        os.Exit(1)
+    }
 
     // Read the input file
     input, err := readInputFile(inputFile)
